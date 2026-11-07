@@ -1,0 +1,24 @@
+// Settings Cloudflare uses to run StudyQuest.
+{
+  "name": "studyquest",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+
+  // The built React pages. Any address that isn't a file or /api/ shows the React app,
+  // so refreshing /assignments still works.
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // The database. The Worker reaches it as env.DB.
+  // database_id gets replaced with the real one when we deploy (step 11).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "studyquest-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

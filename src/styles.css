@@ -1,0 +1,332 @@
+/* StudyQuest's starting styles. The full design comes in step 9.
+   Lexend is a font designed to make reading easier. */
+:root {
+  --ink: #1d2a44;          /* main text */
+  --muted: #5d6b86;        /* quieter text */
+  --paper: #f2f5fa;        /* page background */
+  --card: #ffffff;
+  --line: #dbe2ee;
+  --primary: #3f5bd9;      /* buttons and links */
+  --xp: #f2b400;           /* XP and rewards */
+  --done: #22a06b;         /* finished work, the progress bar */
+  --danger: #c93a3a;       /* errors */
+  font-family: "Lexend", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--primary); }
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- navigation ---------- */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.topbar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.topbar nav a {
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+.topbar nav a:hover { color: var(--ink); background: var(--paper); }
+.topbar nav a.active { color: var(--primary); background: #e6ebfb; }
+
+.button, button {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.topbar .button { margin-left: auto; }
+
+/* ---------- pages ---------- */
+.page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+h1 { margin: 0 0 0.5rem; font-size: 2rem; line-height: 1.2; }
+h2 { margin: 2rem 0 0.75rem; font-size: 1.25rem; }
+.muted { color: var(--muted); max-width: 40rem; }
+
+.connected { color: var(--done); font-weight: 600; }
+
+.subject-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.subject-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+.subject-list li + li { border-top: 1px solid var(--line); }
+.subject-name { font-weight: 600; flex: 1; }
+.dot { width: 0.8rem; height: 0.8rem; border-radius: 50%; }
+
+/* ---------- loading and errors ---------- */
+.status { display: flex; align-items: center; gap: 0.6rem; color: var(--muted); }
+.status-error {
+  display: block;
+  padding: 0.75rem 1rem;
+  border: 1px solid #f1c4c4;
+  border-radius: 10px;
+  background: #fdf1f1;
+  color: var(--danger);
+}
+.status-error p { margin: 0 0 0.5rem; }
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--line);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}
+
+@media (max-width: 600px) {
+  .topbar .button { margin-left: 0; }
+  h1 { font-size: 1.6rem; }
+}
+
+/* ---------- form controls ---------- */
+input, select, textarea {
+  font: inherit;
+  color: var(--ink);
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offset: 0; }
+
+.field { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; padding: 0; border: 0; min-width: 0; }
+.field input, .field select { width: 100%; }
+.field > span, .field legend { font-size: 0.85rem; font-weight: 600; color: var(--muted); padding: 0; }
+
+/* ---------- filters on the Assignments page ---------- */
+.filters {
+  display: grid;
+  grid-template-columns: minmax(12rem, 2fr) 1fr auto 1fr;
+  gap: 1rem;
+  align-items: end;
+  margin: 1.25rem 0 1rem;
+}
+
+/* To do / Done switch: real radio buttons, drawn as one joined control */
+.segmented > div {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  overflow: hidden;
+}
+.segmented label { position: relative; }
+.segmented input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.segmented label span {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.segmented label + label span { border-left: 1px solid var(--line); }
+.segmented input:checked + span { background: #e6ebfb; color: var(--primary); font-weight: 600; }
+.segmented input:focus-visible + span { outline: 3px solid var(--primary); outline-offset: -3px; }
+
+.result-count { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--muted); }
+
+/* ---------- assignment list ---------- */
+.assignment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: opacity 0.15s;
+}
+.assignment-list.is-updating { opacity: 0.55; }
+
+.assignment {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem 0.85rem 0.85rem;
+  border-left: 5px solid var(--subject, var(--line));   /* the subject's color */
+}
+.assignment + .assignment { border-top: 1px solid var(--line); }
+
+.assignment-main { flex: 1; min-width: 0; }
+.assignment-title { font-weight: 600; color: var(--ink); text-decoration: none; }
+.assignment-title:hover { color: var(--primary); text-decoration: underline; }
+
+.assignment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.assignment-notes { margin: 0.3rem 0 0; font-size: 0.9rem; color: var(--muted); }
+
+.difficulty, .done-tag {
+  padding: 0 0.45rem;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+.difficulty-1 { background: #e4f6ee; color: #187a52; }
+.difficulty-2 { background: #fff3d1; color: #8a6200; }
+.difficulty-3 { background: #fde7e7; color: #a32d2d; }
+.done-tag { background: #e6ebfb; color: var(--primary); }
+
+.assignment.is-done .assignment-title { color: var(--muted); text-decoration: line-through; }
+
+.due { margin: 0; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+.due-overdue { color: var(--danger); }
+.due-soon { color: #8a6200; }
+.due-later { color: var(--muted); }
+.due-done { color: var(--muted); font-weight: 400; }
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+.empty p { margin: 0 0 0.75rem; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .filters { grid-template-columns: 1fr 1fr; }
+  .field-search { grid-column: 1 / -1; }
+  .filters .segmented { grid-column: 1 / -1; order: 5; }   /* below Subject and Sort */
+  .segmented > div { width: 100%; }
+  .segmented label { flex: 1; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .assignment { flex-direction: column; gap: 0.35rem; }
+}
+
+/* ---------- "it worked" message ---------- */
+.flash:empty { display: none; }
+.flash {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  background: #e4f6ee;
+  color: #187a52;
+  font-weight: 600;
+}
+
+/* ---------- assignment form ---------- */
+.form-page { max-width: 38rem; }
+.back-link { display: inline-block; margin-bottom: 0.75rem; font-weight: 500; }
+
+.assignment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+textarea { resize: vertical; }
+
+[aria-invalid="true"] { border-color: var(--danger); }
+.field-problem { margin: 0; font-size: 0.875rem; font-weight: 500; color: var(--danger); }
+
+.difficulty-picker label span { text-align: center; }
+.difficulty-picker small { display: block; font-size: 0.75rem; font-weight: 600; color: #8a6200; }
+.difficulty-picker label { flex: 1; }
+
+.form-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+
+button:disabled { opacity: 0.6; cursor: default; }
+
+.button-quiet {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.button-quiet:hover { background: var(--paper); }
+
+.button-danger-quiet {
+  margin-left: auto;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid transparent;
+}
+.button-danger-quiet:hover { border-color: #f1c4c4; background: #fdf1f1; }
+
+.button-danger { background: var(--danger); }
+
+.confirm {
+  padding: 1rem;
+  border: 1px solid #f1c4c4;
+  border-radius: 10px;
+  background: #fdf1f1;
+}
+.confirm p { margin: 0 0 0.75rem; }
+
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+  .button-danger-quiet { margin-left: 0; }
+}
