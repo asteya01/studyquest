@@ -2,11 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="StudyQuest turns your homework into a quest: check off work, earn XP, build streaks and unlock badges." />
+    <meta name="theme-color" content="#1b1f4b" />
     <title>StudyQuest</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f4b'/%3E%3Cpath d='M16 6l3.1 6.3 6.9 1-5 4.9 1.2 6.8L16 21.7l-6.2 3.3L11 18.2l-5-4.9 6.9-1z' fill='%23ffc933'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" />
+    <script>
+      // Pick light or dark BEFORE the page is drawn, so there's no flash of the wrong one.
+      // A saved choice wins; otherwise follow the computer's setting.
+      (function () {
+        var theme = "light";
+        try {
+          var saved = localStorage.getItem("studyquest-theme");
+          if (saved === "light" || saved === "dark") theme = saved;
+          else if (window.matchMedia("(prefers-color-scheme: dark)").matches) theme = "dark";
+        } catch (e) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

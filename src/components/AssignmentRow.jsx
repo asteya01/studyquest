@@ -1,17 +1,27 @@
 // One assignment in a list. Used on the Assignments page, and later on the dashboard.
+import { useState } from "react";
 import { Link } from "react-router";
 import { dueLabel, DIFFICULTY, XP } from "../dates.js";
 
 export default function AssignmentRow({ assignment: a, onToggle, busy = false }) {
   const due = dueLabel(a.due_date, a.completed);
 
+  // A quick "pop" on the check button, only right after you check something off (not for rows
+  // that were already done when the page loaded).
+  const [pop, setPop] = useState(false);
+  function handleClick() {
+    if (!a.completed) setPop(true);
+    onToggle(a);
+  }
+
   return (
     <li className={`assignment${a.completed ? " is-done" : ""}`} style={{ "--subject": a.subject_color }}>
       {onToggle && (
         <button
           type="button"
-          className="check"
-          onClick={() => onToggle(a)}
+          className={`check${pop ? " is-pop" : ""}`}
+          onClick={handleClick}
+          onAnimationEnd={() => setPop(false)}
           disabled={busy}
           aria-pressed={a.completed}
           aria-label={a.completed ? `Mark "${a.title}" as not done` : `Mark "${a.title}" as done`}

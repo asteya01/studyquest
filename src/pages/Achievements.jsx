@@ -1,4 +1,5 @@
 // The Achievements page: your level and XP, the badges you've earned, and what's still locked.
+import useTitle from "../useTitle.js";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { api } from "../api.js";
@@ -45,6 +46,7 @@ function BadgeCard({ badge }) {
 }
 
 export default function Achievements() {
+  useTitle("Achievements");
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 

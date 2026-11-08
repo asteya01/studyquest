@@ -1,4 +1,5 @@
 // The home screen: level, XP, streak, today's progress bar and what to do next.
+import useTitle from "../useTitle.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { api, assignments } from "../api.js";
@@ -24,6 +25,7 @@ function plural(n, word) {
 }
 
 export default function Dashboard() {
+  useTitle("Dashboard");
   const today = useToday();
   const [stats, setStats] = useState(null);
   const [upNext, setUpNext] = useState(null);

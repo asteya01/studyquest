@@ -127,6 +127,23 @@ When something is wrong it replies with a status code and a message the frontend
 
 A shared **Layout** component draws the navigation menu on every page.
 
+## Design
+
+- **Font:** Lexend, a font designed to make reading easier.
+- **Colors are variables.** Every color in `src/styles.css` is a named variable (`--card`, `--ink`,
+  `--link`...). Dark mode is a second set of values for the same names, switched by
+  `data-theme="dark"` on the page. The theme is picked before the page is drawn (a small script in
+  `index.html`), so there is no flash. The choice is saved in the browser; with no saved choice it
+  follows the computer's setting. Text colors were checked against the 4.5:1 contrast guideline in
+  both themes.
+- **One bold thing:** the Level card is dark navy with a gold bar, like a game's health bar. The rest of
+  the interface stays quiet so the assignments stand out.
+- **Phones:** under 700px wide the menu becomes a tab bar along the bottom (easy to reach with a
+  thumb), buttons and inputs are at least 44px tall, and input text is 16px so iPhones don't zoom in.
+- **Accessibility:** a "Skip to content" link, a title for every page, visible keyboard focus, labels
+  on every progress bar, and no information carried by color alone. Animations stop if the computer
+  is set to reduce motion.
+
 ## Folder structure
 
 ```
@@ -159,7 +176,8 @@ studyquest/
     ├── App.jsx           which page shows for which address
     ├── api.js            one place for all requests to the backend
     ├── styles.css        the design
-    ├── components/       reusable pieces (Layout, buttons, cards...)
+    ├── useTitle.js       sets the browser tab's title for each page
+    ├── components/       reusable pieces (Layout, Bar, AssignmentRow, Clock...)
     └── pages/            one file per page
 ```
 

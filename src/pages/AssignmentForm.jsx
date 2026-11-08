@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { api, assignments } from "../api.js";
+import useTitle from "../useTitle.js";
 import { Loading, ErrorMessage } from "../components/Status.jsx";
 import { todayISO, addDays, XP, DIFFICULTY } from "../dates.js";
 
@@ -116,6 +117,7 @@ export default function AssignmentForm() {
   }
 
   const title = editing ? "Edit assignment" : "Add assignment";
+  useTitle(title); // before the early returns below, because hooks must always run
 
   if (loadError) {
     return (

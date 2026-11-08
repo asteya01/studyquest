@@ -115,3 +115,13 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [x] Reusable progress bar component (`Bar.jsx`), shared with the dashboard
 - [x] Removed the "coming soon" placeholder
 - [x] 10 more API checks (71 total) and a new `npm run test:rules` with 27 checks for levels, streaks and badges
+
+## 9. Design and phones
+- [x] Every color is a named variable, so the whole look can change in one place
+- [x] Dark mode: toggle in the top bar, saved in the browser, follows the computer's setting, no flash
+- [x] Text contrast checked (4.5:1 or better) in both themes
+- [x] Level card as the one bold element (dark navy and gold, like a game's health bar)
+- [x] Phone layout: bottom tab bar with icons, side-by-side stat cards, "+ Add" button
+- [x] Touch targets 44px or bigger, 16px input text, no sideways scrolling on any page
+- [x] Skip-to-content link, a title for every page, favicon
+- [x] Check button "pop" (only right after checking something off), and reduced-motion support

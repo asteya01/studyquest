@@ -2,6 +2,7 @@
 //
 // The filters live in the address bar (like /assignments?subject=1&status=todo).
 // That's why refreshing the page, or sharing the link, keeps them.
+import useTitle from "../useTitle.js";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { api, assignments } from "../api.js";
@@ -23,6 +24,7 @@ const SORTS = [
 ];
 
 export default function Assignments() {
+  useTitle("Assignments");
   const [params, setParams] = useSearchParams();
   const subject = params.get("subject") ?? "";
   const status = params.get("status") ?? "all";

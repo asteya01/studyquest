@@ -1,4 +1,5 @@
 // The Subjects page: add a subject, or delete one you don't need.
+import useTitle from "../useTitle.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { api } from "../api.js";
@@ -12,6 +13,7 @@ function plural(n, word) {
 }
 
 export default function Subjects() {
+  useTitle("Subjects");
   const [subjects, setSubjects] = useState(null);
   const [loadError, setLoadError] = useState(null);
 

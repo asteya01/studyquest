@@ -269,3 +269,57 @@ Don't build achievements or change the design. Those are steps 8 and 9.
 - Then list every file you changed or added, with one line on why.
 - Finish with the exact commands to run and test it myself, and what I should try
   by hand.
+
+## Prompt 8: Achievements page
+
+**ROLE:** You are a senior full-stack engineer pair-programming with an 8th-grade student.
+I'm the engineer in charge. You're my assistant. Explain what you do in simple
+language and define any technical terms.
+
+**CONTEXT:** StudyQuest is a homework planner that works like a game (React + Vite, one Cloudflare
+Worker, Cloudflare D1). Steps 1-7 are done: assignments, check-off with XP, the
+dashboard with streak and progress, and subjects. The Achievements page is still a
+"coming soon" placeholder. Read AGENTS.md, ARCHITECTURE.md and TASKS.md first and
+follow them.
+
+**TASK:** Build step 8 only, "Achievements."
+1. Define 12 badges in one list, each with a name, description, tier (bronze, silver
+   or gold), the number it looks at, and a target. They use finished assignments, best
+   streak, total XP, hard assignments finished, assignments finished before their due
+   date, most finished in one day, and number of different subjects finished.
+2. Backend: GET /api/achievements returns level, XP, best streak, and every badge with
+   how far along I am and whether it's earned.
+3. Frontend: an Achievements page with summary cards, "Earned" badges, and "Still
+   locked" badges with a progress bar, ordered by how close I am to unlocking them.
+4. Add automated checks, including a separate test file for the pure rules (levels,
+   streaks and badges) that doesn't need the app running.
+5. Update ARCHITECTURE.md and TASKS.md, and remove the placeholder page.
+Don't change the design. That's step 9.
+
+**CONSTRAINTS:**
+- Don't store badges or counters in the database. Work them out from the completions
+  table every time, so they can't get out of sync. Don't change the tables.
+- Streak badges use my best streak ever, not my current one, so a badge I earned
+  doesn't disappear when a streak ends.
+- Put every badge rule in one list so I can add a badge by adding one line.
+- Use ? placeholders in SQL. All requests go through src/api.js.
+- Show progress as "3 of 5" text as well as a bar, and give each bar an accessible label.
+- Don't rely on color alone: locked and earned badges need different icons and text.
+- Must work on a phone (375px wide), with a loading indicator and an error message with
+  a retry button.
+
+**ACCEPTANCE CRITERIA:**
+- A new student with no finished work sees 0 of 12 badges, and a friendly message
+  under "Earned".
+- Finishing an assignment moves the right counters, and un-checking puts them back.
+- A badge is earned exactly when its number reaches its target (4 of 5 is locked, 5
+  of 5 is earned).
+- Locked badges are in order from closest to unlock to furthest.
+- A best streak of 3 earns On a Roll but not Week Warrior.
+- npm run test:api, npm run test:rules and npm run build all pass.
+
+**OUTPUT:**
+- Start with your plan in a few sentences, before writing code.
+- Then list every file you changed or added, with one line on why.
+- Finish with the exact commands to run and test it myself, and what I should try
+  by hand.
