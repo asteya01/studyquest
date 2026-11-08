@@ -9,6 +9,7 @@ import { listSubjects } from "./subjects.js";
 import {
   listAssignments, getAssignment, createAssignment, updateAssignment, deleteAssignment,
 } from "./assignments.js";
+import { completeAssignment, undoCompletion } from "./completions.js";
 
 // GET /api/health: is the backend running, and can it reach the database?
 async function health(env) {
@@ -25,6 +26,8 @@ const routes = [
   ["GET", "/api/assignments/:id", getAssignment],
   ["PUT", "/api/assignments/:id", updateAssignment],
   ["DELETE", "/api/assignments/:id", deleteAssignment],
+  ["POST", "/api/assignments/:id/complete", completeAssignment],
+  ["DELETE", "/api/assignments/:id/complete", undoCompletion],
 ];
 
 export default {

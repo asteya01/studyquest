@@ -19,7 +19,7 @@ function shape(row) {
   return { ...row, completed: row.completed_at !== null };
 }
 
-async function findAssignment(env, id) {
+export async function findAssignment(env, id) {
   const row = await env.DB.prepare(`${SELECT_ASSIGNMENT} WHERE a.id = ?`).bind(id).first();
   if (!row) throw new ApiError(`There's no assignment with ID ${id}. It may have been deleted.`, 404);
   return shape(row);

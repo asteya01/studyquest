@@ -206,6 +206,28 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 .assignment + .assignment { border-top: 1px solid var(--line); }
 
 .assignment-main { flex: 1; min-width: 0; }
+
+/* The round check button on the left of each assignment. */
+.check {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: transparent;            /* the tick is hidden until it's done */
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.check svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.check:hover:not(:disabled) { border-color: var(--done); color: var(--done); }
+.check[aria-pressed="true"] { background: var(--done); border-color: var(--done); color: #fff; }
+.check[aria-pressed="true"]:hover:not(:disabled) { background: var(--card); color: var(--done); }
+.check:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.check:disabled { opacity: 0.5; cursor: progress; }
 .assignment-title { font-weight: 600; color: var(--ink); text-decoration: none; }
 .assignment-title:hover { color: var(--primary); text-decoration: underline; }
 
@@ -257,7 +279,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 }
 
 @media (max-width: 480px) {
-  .assignment { flex-direction: column; gap: 0.35rem; }
+  .assignment { flex-wrap: wrap; gap: 0.35rem 0.75rem; }
+  .assignment-main { flex-basis: calc(100% - 3rem); }
+  .assignment .due { flex-basis: 100%; padding-left: 2.75rem; }
 }
 
 /* ---------- "it worked" message ---------- */

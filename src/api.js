@@ -37,4 +37,6 @@ export const assignments = {
   create: (assignment) => request("POST", "/assignments", assignment),
   update: (id, changes) => request("PUT", `/assignments/${id}`, changes),
   remove: (id) => request("DELETE", `/assignments/${id}`),
+  complete: (id) => request("POST", `/assignments/${id}/complete`),
+  undo: (id) => request("DELETE", `/assignments/${id}/complete`),
 };

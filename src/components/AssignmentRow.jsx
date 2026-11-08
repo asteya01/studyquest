@@ -1,19 +1,34 @@
 // One assignment in a list. Used on the Assignments page, and later on the dashboard.
 import { Link } from "react-router";
-import { dueLabel, DIFFICULTY } from "../dates.js";
+import { dueLabel, DIFFICULTY, XP } from "../dates.js";
 
-export default function AssignmentRow({ assignment: a }) {
+export default function AssignmentRow({ assignment: a, onToggle, busy = false }) {
   const due = dueLabel(a.due_date, a.completed);
 
   return (
     <li className={`assignment${a.completed ? " is-done" : ""}`} style={{ "--subject": a.subject_color }}>
+      {onToggle && (
+        <button
+          type="button"
+          className="check"
+          onClick={() => onToggle(a)}
+          disabled={busy}
+          aria-pressed={a.completed}
+          aria-label={a.completed ? `Mark "${a.title}" as not done` : `Mark "${a.title}" as done`}
+          title={a.completed ? "Mark as not done" : `Check off for ${XP[a.difficulty]} XP`}
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M5 10.5l3.2 3.2L15 6.8" />
+          </svg>
+        </button>
+      )}
       <div className="assignment-main">
         <Link to={`/assignments/${a.id}/edit`} className="assignment-title">
           {a.title}
         </Link>
         <p className="assignment-meta">
           <span className="assignment-subject">{a.subject_name}</span>
-          <span className={`difficulty difficulty-${a.difficulty}`}>{DIFFICULTY[a.difficulty]}</span>
+          <span className={`difficulty difficulty-${a.difficulty}`}>{DIFFICULTY[a.difficulty]} · {a.completed ? a.xp_earned : XP[a.difficulty]} XP</span>
           {a.completed && <span className="done-tag">Done</span>}
         </p>
         {a.notes && <p className="assignment-notes">{a.notes}</p>}

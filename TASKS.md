@@ -82,3 +82,10 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [ ] GitHub repository
 - [ ] Prompt log with at least ten structured prompts
 - [ ] Five-minute demo
+
+## 5. Completing work
+- [x] `POST /api/assignments/:id/complete` awards 10, 20 or 30 XP (the server decides)
+- [x] `DELETE /api/assignments/:id/complete` un-checks and takes the XP back
+- [x] Checking off twice is refused, so XP can't be double counted
+- [x] Round check button on every assignment, with "+20 XP" message and level-up message
+- [x] Automated checks for completing and undoing (`npm run test:api`)

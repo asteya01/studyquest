@@ -2,7 +2,7 @@
 //
 // The filters live in the address bar (like /assignments?subject=1&status=todo).
 // That's why refreshing the page, or sharing the link, keeps them.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { api, assignments } from "../api.js";
 import AssignmentRow from "../components/AssignmentRow.jsx";
@@ -49,6 +49,40 @@ export default function Assignments() {
     const timer = setTimeout(() => setFlash(null), 5000);
     return () => clearTimeout(timer);
   }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Check off (or un-check) an assignment. We wait for the server's answer before changing the row,
+  // because the server is the one that decides how much XP it's worth.
+  const [busyId, setBusyId] = useState(null);
+  const flashTimer = useRef(null);
+  function showFlash(message) {
+    clearTimeout(flashTimer.current);
+    setFlash(message);
+    flashTimer.current = setTimeout(() => setFlash(null), 5000);
+  }
+  useEffect(() => () => clearTimeout(flashTimer.current), []);
+
+  async function toggle(a) {
+    setBusyId(a.id);
+    try {
+      const result = a.completed ? await assignments.undo(a.id) : await assignments.complete(a.id);
+      // Swap the new version of this one assignment into the list. The row stays where it is
+      // until the next reload, so it doesn't jump away under your finger.
+      setList((rows) => rows.map((row) => (row.id === a.id ? result.assignment : row)));
+      setError(null);
+      if (a.completed) {
+        showFlash(`Unchecked. −${result.xp_lost} XP. You have ${result.total_xp} XP.`);
+      } else if (result.leveled_up) {
+        showFlash(`+${result.xp_earned} XP. Level up! You're now level ${result.level}.`);
+      } else {
+        showFlash(`+${result.xp_earned} XP. You have ${result.total_xp} XP.`);
+      }
+    } catch (err) {
+      showFlash(null);
+      setError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   // Change one filter in the address bar, removing it when it's back to its default.
   //
@@ -164,7 +198,7 @@ export default function Assignments() {
           {list.length > 0 ? (
             <ul className={`assignment-list${loading ? " is-updating" : ""}`}>
               {list.map((a) => (
-                <AssignmentRow key={a.id} assignment={a} />
+                <AssignmentRow key={a.id} assignment={a} onToggle={toggle} busy={busyId === a.id} />
               ))}
             </ul>
           ) : filtered ? (

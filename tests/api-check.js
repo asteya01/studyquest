@@ -78,6 +78,22 @@ async function main() {
   const wildcard = await call("GET", "/assignments?search=%25");
   check("searching for % doesn't match everything", wildcard.data?.length === 0);
 
+  console.log("\nChecking off work and earning XP");
+  const statsBefore = await call("POST", `/assignments/${id}/complete`);
+  check("checking off a medium assignment replies 200", statsBefore.status === 200, JSON.stringify(statsBefore.data));
+  check("a medium assignment earns 20 XP", statsBefore.data?.xp_earned === 20);
+  check("the assignment now shows as completed", statsBefore.data?.assignment?.completed === true);
+  const xpAfter = statsBefore.data?.total_xp;
+  check("level follows the 100-XP rule", statsBefore.data?.level === Math.floor(xpAfter / 100) + 1);
+  const twice = await call("POST", `/assignments/${id}/complete`);
+  check("checking off twice is refused (no double XP)", twice.status === 409 && typeof twice.data?.error === "string");
+  const undone = await call("DELETE", `/assignments/${id}/complete`);
+  check("un-checking takes the XP back", undone.data?.undone === true && undone.data?.total_xp === xpAfter - 20);
+  const undoneTwice = await call("DELETE", `/assignments/${id}/complete`);
+  check("un-checking something not done is refused", undoneTwice.status === 409);
+  const noSuch = await call("POST", "/assignments/999999/complete");
+  check("checking off an assignment that doesn't exist replies 404", noSuch.status === 404);
+
   console.log("\nBad input gets a clear error");
   const bad = [
     ["empty title", { title: "  ", subject_id: subjectId, due_date: "2030-01-15" }],
