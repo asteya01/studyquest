@@ -23,6 +23,8 @@ async function request(method, path, body) {
 export const api = {
   health: () => request("GET", "/health"),
   subjects: () => request("GET", "/subjects"),
+  addSubject: (subject) => request("POST", "/subjects", subject),
+  removeSubject: (id) => request("DELETE", `/subjects/${id}`),
   stats: (today) => request("GET", `/stats?today=${today}`),
 };
 

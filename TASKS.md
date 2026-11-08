@@ -98,3 +98,11 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [x] Dashboard: level bar, XP, streak, progress bar, "Up next" list you can check off
 - [x] Live clock with greeting; the dashboard moves to the new day after midnight
 - [x] 15 more automated checks (45 total)
+
+## 7. Subjects page
+- [x] `POST /api/subjects` with validation (name 1-30 characters, color, no duplicates, up to 12 subjects)
+- [x] `DELETE /api/subjects/:id` (also deletes its assignments and their XP)
+- [x] Subject list shows each subject's color and assignment count (links to the filtered Assignments page)
+- [x] Add form with named color swatches and a message by the name box
+- [x] Delete asks "are you sure?" and says how many assignments and how much XP go with it
+- [x] 16 more automated checks (61 total)

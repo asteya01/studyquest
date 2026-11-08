@@ -5,7 +5,7 @@
 //
 // env.DB is the D1 database (set up in wrangler.jsonc).
 import { json, ApiError } from "./helpers.js";
-import { listSubjects } from "./subjects.js";
+import { listSubjects, createSubject, deleteSubject } from "./subjects.js";
 import {
   listAssignments, getAssignment, createAssignment, updateAssignment, deleteAssignment,
 } from "./assignments.js";
@@ -22,6 +22,8 @@ async function health(env) {
 const routes = [
   ["GET", "/api/health", health],
   ["GET", "/api/subjects", listSubjects],
+  ["POST", "/api/subjects", createSubject],
+  ["DELETE", "/api/subjects/:id", deleteSubject],
   ["GET", "/api/stats", getStats],
   ["GET", "/api/assignments", listAssignments],
   ["POST", "/api/assignments", createAssignment],

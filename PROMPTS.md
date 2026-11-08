@@ -162,3 +162,60 @@ Don't build the dashboard, streak or progress bar. Those are step 6.
 - Checking off a done assignment, un-checking one that isn't done, and using an ID that
   doesn't exist all give a clear error message instead of crashing.
 - Refreshing the page keeps the checked state (it's saved in
+
+## Prompt 6: Quest stats and dashboard
+
+**ROLE:**
+You are a senior full-stack engineer pair-programming with an 8th-grade student.
+I'm the engineer in charge. You're my assistant. Explain what you do in simple
+language and define any technical terms.
+
+**CONTEXT:**
+StudyQuest is a homework planner that works like a game (React + Vite frontend, one
+Cloudflare Worker backend, Cloudflare D1 database). Steps 1-5 are done: assignments
+CRUD, the Assignments page and form, and checking off work for XP (10/20/30). The
+dashboard is still a placeholder from step 1. Read AGENTS.md, ARCHITECTURE.md and
+TASKS.md first and follow them.
+
+**TASK:**
+Build step 6 only, "Quest stats."
+1. Backend: GET /api/stats?today=YYYY-MM-DD returns total XP, level, XP into the
+   current level, streak, whether something was finished today, and progress
+   (done, total, percent) for work due today, tomorrow or overdue.
+2. Rebuild the Dashboard page with a level card and XP bar, total XP, streak, a
+   "Today's progress" bar, a live clock with a greeting, and an "Up next" list of
+   the 5 soonest to-do assignments that I can check off.
+3. Add automated checks for the stats endpoint to tests/api-check.js.
+4. Update ARCHITECTURE.md and TASKS.md.
+Don't build subjects or achievements. Those are steps 7 and 8.
+
+**CONSTRAINTS:**
+- "Today" comes from the browser, never the server clock (the server is UTC, 8 hours
+  ahead of California). The server must refuse a date that's more than a day off
+  from its own date.
+- A streak is days in a row ending today. If I haven't finished anything yet today,
+  the streak is still alive. It only breaks after a full day with nothing done.
+- Streak days must be my local days. If that needs a new column, make a NEW numbered
+  migration and don't edit old ones.
+- XP and level are calculated from the completions table each time. Don't store totals.
+- The progress bar must not be inflated by old overdue work I finished long ago.
+- The dashboard needs a loading indicator and a helpful error message with a retry button.
+- Progress bars need accessible labels (role="progressbar" with values).
+- The clock's timer must be cleaned up when I leave the page. Respect reduced-motion.
+- It must work on a phone (375px wide), with no sideways scrolling.
+
+**ACCEPTANCE CRITERIA:**
+- After checking off work, XP, level, streak and the progress bar update without
+  refreshing the page.
+- With no streak, a one-day streak, a streak that's alive from yesterday, and a
+  broken streak, the numbers and messages are right.
+- With nothing due, the progress card says I'm all clear instead of showing 0 of 0.
+- Un-checking work puts XP, streak and progress back.
+- Leaving the dashboard open past midnight moves it to the new day.
+- npm run test:api and npm run build both pass.
+
+**OUTPUT:**
+- Start with your plan in a few sentences, before writing code.
+- Then list every file you changed or added, with one line on why.
+- Finish with the exact commands to run and test it myself, and what I should try
+  by hand.

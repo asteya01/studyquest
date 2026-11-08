@@ -81,9 +81,9 @@ student's own calendar day, from the browser). The streak counts `completed_on` 
 | Action | Method and address | Sends | Gets back |
 | --- | --- | --- | --- |
 | Check the backend is running | `GET /api/health` | | `{ ok, database }` |
-| List subjects | `GET /api/subjects` | | list of subjects |
-| Add a subject | `POST /api/subjects` | name, color | the new subject |
-| Delete a subject | `DELETE /api/subjects/:id` | | `{ deleted: true }` |
+| List subjects | `GET /api/subjects` | | subjects, each with its assignment count and XP earned |
+| Add a subject | `POST /api/subjects` | name, color | the new subject (409 if the name is taken) |
+| Delete a subject | `DELETE /api/subjects/:id` | | `{ deleted, assignments_deleted, xp_lost }` |
 | List assignments | `GET /api/assignments?subject=&status=&sort=&search=` | filters | list of assignments |
 | Get one assignment | `GET /api/assignments/:id` | | one assignment |
 | Add an assignment | `POST /api/assignments` | title, subject_id, due_date, difficulty, notes | the new assignment |
@@ -111,6 +111,7 @@ When something is wrong it replies with a status code and a message the frontend
 | 200 / 201 | It worked (201 = something new was created) |
 | 400 | The request had a problem, like an empty title |
 | 404 | That assignment or subject doesn't exist |
+| 409 | It conflicts with something that already exists, like a duplicate subject name or checking off work twice |
 | 500 | Something broke in the backend |
 
 ## Pages
@@ -120,7 +121,7 @@ When something is wrong it replies with a status code and a message the frontend
 | Dashboard | `/` | Today's progress bar, XP, level, streak, what's due soon, the clock |
 | Assignments | `/assignments` | Every assignment with search, filter by subject and status, sort by due date |
 | Add / edit assignment | `/assignments/new`, `/assignments/:id/edit` | The assignment form |
-| Subjects | `/subjects` | Add and remove subjects |
+| Subjects | `/subjects` | Add a subject (name and color), delete one, see how many assignments each has |
 | Achievements | `/achievements` | Level, total XP, and badges earned and locked |
 
 A shared **Layout** component draws the navigation menu on every page.
@@ -142,7 +143,7 @@ studyquest/
 ├── worker/               the backend
 │   ├── index.js          the router: sends each /api/ request to the right endpoint
 │   ├── helpers.js        shared tools (replies, errors, checking IDs and dates)
-│   ├── subjects.js       subject endpoints
+│   ├── subjects.js       subject endpoints (list, add, delete)
 │   ├── assignments.js    assignment endpoints and their validation
 │   ├── completions.js    check off and un-check
 │   ├── xp.js             the XP and level rules

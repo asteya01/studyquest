@@ -95,13 +95,11 @@ h2 { margin: 2rem 0 0.75rem; font-size: 1.25rem; }
   border: 1px solid var(--line);
   border-radius: 12px;
 }
-.subject-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-}
-.subject-list li + li { border-top: 1px solid var(--line); }
+.subject-item { padding: 0.5rem 1rem; }
+.subject-item + .subject-item { border-top: 1px solid var(--line); }
+.subject-row { display: flex; align-items: center; gap: 0.75rem; min-height: 2.5rem; }
+.subject-item .confirm { margin: 0.25rem 0 0.5rem; }
+.subject-count { font-size: 0.9rem; }
 .subject-name { font-weight: 600; flex: 1; }
 .dot { width: 0.8rem; height: 0.8rem; border-radius: 50%; }
 
@@ -392,4 +390,37 @@ button:disabled { opacity: 0.6; cursor: default; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bar-fill { transition: none; }
+}
+
+/* ---------- subjects page ---------- */
+.subject-form { max-width: none; }
+.visually-hidden {            /* hidden on screen, still read by screen readers */
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.swatches { border: none; padding: 0; margin: 0; }
+.swatches legend { padding: 0; margin-bottom: 0.35rem; font-weight: 600; font-size: 0.9rem; }
+.swatches > div { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.swatches label { position: relative; cursor: pointer; }
+.swatches input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.swatches label > span {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 3px solid var(--card);
+  box-shadow: 0 0 0 1px var(--line);
+  transition: box-shadow 0.15s;
+}
+.swatches input:checked + span { box-shadow: 0 0 0 3px var(--ink); }
+.swatches input:focus-visible + span { box-shadow: 0 0 0 3px var(--primary); }
+
+@media (max-width: 480px) {
+  .subject-row { flex-wrap: wrap; }
+  .subject-row .button-danger-quiet { margin-left: auto; }
 }

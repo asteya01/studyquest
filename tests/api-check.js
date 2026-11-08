@@ -140,6 +140,53 @@ async function main() {
   check("the streak is back to what it was", s3?.streak === s0.streak);
   await call("DELETE", `/assignments/${todayId}`);
 
+  console.log("\nAdding and deleting subjects");
+  const newSubject = await call("POST", "/subjects", { name: "  Test   Subject ", color: "#2BB8C9" });
+  const subId = newSubject.data?.id;
+  check("adding a subject replies 201", newSubject.status === 201, JSON.stringify(newSubject.data));
+  check("extra spaces in the name are cleaned up", newSubject.data?.name === "Test Subject");
+  check("the color is saved in lowercase", newSubject.data?.color === "#2bb8c9");
+  const listed = await call("GET", "/subjects");
+  check("the new subject shows in the list", listed.data?.some((s) => s.id === subId && s.assignment_count === 0));
+  const dup = await call("POST", "/subjects", { name: "test subject", color: "#7c8cff" });
+  check("a duplicate name (even in different capitals) is refused with 409", dup.status === 409 && /already/.test(dup.data?.error));
+  const badSubjects = [
+    ["an empty name", { name: "   ", color: "#7c8cff" }],
+    ["a name that's too long", { name: "x".repeat(31), color: "#7c8cff" }],
+    ["a color that isn't a color", { name: "Ok name", color: "red" }],
+    ["a name that isn't text", { name: 42, color: "#7c8cff" }],
+  ];
+  for (const [what, body] of badSubjects) {
+    const r = await call("POST", "/subjects", body);
+    check(`${what} is rejected with a message`, r.status === 400 && typeof r.data?.error === "string", `got ${r.status}`);
+  }
+
+  // Deleting a subject takes its assignments, and the XP from them, with it.
+  const inSub = await call("POST", "/assignments", { title: "Will be deleted", subject_id: subId, due_date: "2030-01-15", difficulty: 3 });
+  await call("POST", `/assignments/${inSub.data?.id}/complete`, { today: TODAY });
+  const xpBeforeDelete = (await call("GET", `/stats?today=${TODAY}`)).data?.total_xp;
+  const withCounts = (await call("GET", "/subjects")).data?.find((s) => s.id === subId);
+  check("the list counts assignments and XP for the subject", withCounts?.assignment_count === 1 && withCounts?.xp_earned === 30);
+  const delSub = await call("DELETE", `/subjects/${subId}`);
+  check("deleting reports what was removed", delSub.data?.assignments_deleted === 1 && delSub.data?.xp_lost === 30);
+  check("its assignment is gone too", (await call("GET", `/assignments/${inSub.data?.id}`)).status === 404);
+  const xpAfterDelete = (await call("GET", `/stats?today=${TODAY}`)).data?.total_xp;
+  check("its XP is gone from the total", xpAfterDelete === xpBeforeDelete - 30);
+  check("deleting a subject that's gone replies 404", (await call("DELETE", `/subjects/${subId}`)).status === 404);
+  check("deleting with a bad ID replies 404", (await call("DELETE", "/subjects/abc")).status === 404);
+
+  // The limit of 12 subjects. Fill up to the limit, check the next one is refused, then clean up.
+  const made = [];
+  let have = (await call("GET", "/subjects")).data.length;
+  while (have < 12) {
+    const r = await call("POST", "/subjects", { name: `Limit test ${have}`, color: "#7c8cff" });
+    made.push(r.data?.id);
+    have++;
+  }
+  const tooMany = await call("POST", "/subjects", { name: "One too many", color: "#7c8cff" });
+  check("a 13th subject is refused with a message", tooMany.status === 400 && /up to 12/.test(tooMany.data?.error ?? ""));
+  for (const mid of made) await call("DELETE", `/subjects/${mid}`);
+
   console.log("\nBad input gets a clear error");
   const bad = [
     ["empty title", { title: "  ", subject_id: subjectId, due_date: "2030-01-15" }],
