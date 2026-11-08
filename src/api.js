@@ -25,6 +25,7 @@ export const api = {
   subjects: () => request("GET", "/subjects"),
   addSubject: (subject) => request("POST", "/subjects", subject),
   removeSubject: (id) => request("DELETE", `/subjects/${id}`),
+  achievements: () => request("GET", "/achievements"),
   stats: (today) => request("GET", `/stats?today=${today}`),
 };
 

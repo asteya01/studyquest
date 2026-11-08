@@ -140,6 +140,31 @@ async function main() {
   check("the streak is back to what it was", s3?.streak === s0.streak);
   await call("DELETE", `/assignments/${todayId}`);
 
+  console.log("\nAchievements and badges");
+  const a0 = (await call("GET", "/achievements")).data;
+  check("achievements include level, XP and badges", a0 && a0.level >= 1 && typeof a0.total_xp === "number" && Array.isArray(a0.badges));
+  check("there are 12 badges, each with a name, description and target",
+    a0?.badges.length === 12 && a0.badges.every((b) => b.name && b.description && b.target > 0));
+  check("a badge is earned exactly when it reaches its target",
+    a0?.badges.every((b) => b.earned === (b.current >= b.target)));
+  check("the earned count matches the badges", a0?.earned_count === a0?.badges.filter((b) => b.earned).length);
+  const metric = (data, badgeId) => data.badges.find((b) => b.id === badgeId).current;
+
+  // A hard assignment due far in the future, finished today, should move four counters.
+  const hard = await call("POST", "/assignments", { title: "Badge test", subject_id: subjectId, due_date: "2030-01-15", difficulty: 3 });
+  await call("POST", `/assignments/${hard.data?.id}/complete`, { today: TODAY });
+  const a1 = (await call("GET", "/achievements")).data;
+  check("finishing work adds to 'assignments finished'", metric(a1, "high_five") === metric(a0, "high_five") + 1);
+  check("finishing a hard assignment adds to 'hard assignments'", metric(a1, "boss_battle") === metric(a0, "boss_battle") + 1);
+  check("finishing before the due date adds to 'finished early'", metric(a1, "head_start") === metric(a0, "head_start") + 1);
+  check("30 XP is added to the XP badges", metric(a1, "century") === metric(a0, "century") + 30);
+  check("the best streak is at least 1 day", a1?.best_streak >= 1);
+
+  await call("DELETE", `/assignments/${hard.data?.id}/complete`);
+  const a2 = (await call("GET", "/achievements")).data;
+  check("un-checking puts the counts back", metric(a2, "high_five") === metric(a0, "high_five") && metric(a2, "century") === metric(a0, "century"));
+  await call("DELETE", `/assignments/${hard.data?.id}`);
+
   console.log("\nAdding and deleting subjects");
   const newSubject = await call("POST", "/subjects", { name: "  Test   Subject ", color: "#2BB8C9" });
   const subId = newSubject.data?.id;

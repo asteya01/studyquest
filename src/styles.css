@@ -424,3 +424,48 @@ button:disabled { opacity: 0.6; cursor: default; }
   .subject-row { flex-wrap: wrap; }
   .subject-row .button-danger-quiet { margin-left: auto; }
 }
+
+/* ---------- achievements ---------- */
+.badge-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.75rem;
+}
+.badge {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.badge:not(.is-earned) { background: transparent; border-style: dashed; }
+.badge-text { flex: 1; min-width: 0; }
+.badge h3 { margin: 0; font-size: 1rem; }
+.badge p { margin: 0.15rem 0 0; font-size: 0.875rem; color: var(--muted); }
+.badge .bar { height: 0.55rem; margin-top: 0.6rem; }
+.badge p.badge-status { margin-top: 0.35rem; font-weight: 600; }
+.badge.is-earned .badge-status { color: var(--done); }
+
+.medal {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.medal svg { width: 1.6rem; height: 1.6rem; }
+.medal-bronze { background: #e7b384; }
+.medal-silver { background: #cfd7e3; }
+.medal-gold   { background: #ffd54a; }
+.medal-bronze svg, .medal-silver svg, .medal-gold svg { fill: var(--ink); }
+.medal-locked { background: #e6ebf5; }
+.medal .lock { fill: none; stroke: #8b97ad; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.medal .lock rect { fill: #8b97ad; stroke: none; }
+
+.badge-note { margin-top: 2rem; font-size: 0.875rem; }

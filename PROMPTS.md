@@ -219,3 +219,53 @@ Don't build subjects or achievements. Those are steps 7 and 8.
 - Then list every file you changed or added, with one line on why.
 - Finish with the exact commands to run and test it myself, and what I should try
   by hand.
+
+## Prompt 7: Subjects page
+
+**ROLE:** You are a senior full-stack engineer pair-programming with an 8th-grade student.
+I'm the engineer in charge. You're my assistant. Explain what you do in simple
+language and define any technical terms.
+
+**CONTEXT:** StudyQuest is a homework planner that works like a game (React + Vite, one Cloudflare
+Worker, Cloudflare D1). Steps 1-6 are done, including the dashboard and XP. The
+Subjects page is still a "coming soon" placeholder, and GET /api/subjects is the only
+subject endpoint. The assignments table has ON DELETE CASCADE on subject_id. Read
+AGENTS.md, ARCHITECTURE.md and TASKS.md first and follow them.
+
+**TASK:** Build step 7 only, "Subjects page."
+1. Backend: POST /api/subjects (name and color) and DELETE /api/subjects/:id.
+2. The subject list also returns each subject's assignment count and XP earned.
+3. Frontend: a Subjects page with an add form (name and color swatches) and a list of
+   subjects with their colors and assignment counts, and a Delete button on each.
+4. Add automated checks to tests/api-check.js.
+5. Update ARCHITECTURE.md and TASKS.md.
+Don't build achievements or change the design. Those are steps 8 and 9.
+
+**CONSTRAINTS:**
+- Validate on the server: name required, trimmed, 30 characters or fewer, valid color,
+  no duplicate names (even if the capital letters differ), and at most 12 subjects.
+  Duplicates reply 409, other problems 400, all with a message a person can understand.
+- Deleting a subject deletes its assignments and their XP. Before deleting, the page
+  must say exactly how many assignments and how much XP will be lost. Use an inline
+  "are you sure?" box, not a browser pop-up.
+- Color can't be the only way to choose: each swatch needs a name for screen readers.
+- Messages for mistakes appear next to the name box, and focus goes back to it.
+- Use ? placeholders in SQL. Don't change the database tables. All requests go
+  through src/api.js.
+- Must work on a phone (375px wide) and with only a keyboard.
+
+**ACCEPTANCE CRITERIA:**
+- I can add "Art", see it in the list, and see it in the dropdowns on the
+  Assignments page and the assignment form.
+- Adding an empty name, a name over 30 characters, "math" when "Math" exists, or a 13th
+  subject all show a clear message and don't add anything.
+- Deleting a subject with assignments shows the warning with the right numbers, then
+  removes the subject, its assignments, and the XP from my total.
+- Deleting a subject with no assignments shows a shorter question.
+- npm run test:api and npm run build both pass.
+
+**OUTPUT:**
+- Start with your plan in a few sentences, before writing code.
+- Then list every file you changed or added, with one line on why.
+- Finish with the exact commands to run and test it myself, and what I should try
+  by hand.

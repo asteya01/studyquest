@@ -106,3 +106,12 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [x] Add form with named color swatches and a message by the name box
 - [x] Delete asks "are you sure?" and says how many assignments and how much XP go with it
 - [x] 16 more automated checks (61 total)
+
+## 8. Achievements page
+- [x] 12 badges defined in one list (`worker/badges.js`) with their rules
+- [x] `GET /api/achievements`: level, XP, best streak, and every badge with progress
+- [x] Badges are worked out from real activity each time (nothing extra stored)
+- [x] Achievements page: summary cards, earned badges, locked badges closest-to-unlocking first
+- [x] Reusable progress bar component (`Bar.jsx`), shared with the dashboard
+- [x] Removed the "coming soon" placeholder
+- [x] 10 more API checks (71 total) and a new `npm run test:rules` with 27 checks for levels, streaks and badges

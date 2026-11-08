@@ -20,6 +20,12 @@ With `npm run dev` running, open a second Terminal tab and run:
 npm run test:api
 ```
 
+The game rules (levels, streaks, badges) can be tested without the app running:
+
+```bash
+npm run test:rules
+```
+
 ## Start the database over
 
 ```bash

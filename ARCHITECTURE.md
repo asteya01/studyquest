@@ -63,7 +63,7 @@ the quest features are calculated from, so they never get out of sync:
 | **Level** | Every 100 XP is one level: `level = floor(XP / 100) + 1`. |
 | **Streak** | Count the days in a row, up to today, that have at least one completion. Today not finished yet doesn't break it. |
 | **Progress bar** | Of the assignments due today or tomorrow (or overdue), what fraction are done. |
-| **Badges** | Rules checked against completions, like "5 assignments finished" or "a 3-day streak". |
+| **Badges** | 12 rules in `worker/badges.js`, checked against completions each time, like "5 assignments finished" or "a 3-day streak". Never stored, so they can't get out of sync. A badge can lock again if you un-check work. |
 
 ### Dates and time zones
 
@@ -91,7 +91,8 @@ student's own calendar day, from the browser). The streak counts `completed_on` 
 | Delete an assignment | `DELETE /api/assignments/:id` | | `{ deleted: true }` |
 | Check off an assignment | `POST /api/assignments/:id/complete` | today | XP earned, total XP, level |
 | Un-check an assignment | `DELETE /api/assignments/:id/complete` | | `{ undone: true }` |
-| Quest stats | `GET /api/stats?today=YYYY-MM-DD` | today's date | XP, level, streak, progress (badges come in step 8) |
+| Quest stats | `GET /api/stats?today=YYYY-MM-DD` | today's date | XP, level, streak, progress |
+| Achievements | `GET /api/achievements` | | level, XP, best streak and all 12 badges (earned or locked, with progress) |
 
 **GET** reads, **POST** creates, **PUT** updates and **DELETE** removes.
 
@@ -122,7 +123,7 @@ When something is wrong it replies with a status code and a message the frontend
 | Assignments | `/assignments` | Every assignment with search, filter by subject and status, sort by due date |
 | Add / edit assignment | `/assignments/new`, `/assignments/:id/edit` | The assignment form |
 | Subjects | `/subjects` | Add a subject (name and color), delete one, see how many assignments each has |
-| Achievements | `/achievements` | Level, total XP, and badges earned and locked |
+| Achievements | `/achievements` | Level, total XP, best streak, badges earned, and locked badges with progress |
 
 A shared **Layout** component draws the navigation menu on every page.
 
@@ -147,9 +148,12 @@ studyquest/
 │   ├── assignments.js    assignment endpoints and their validation
 │   ├── completions.js    check off and un-check
 │   ├── xp.js             the XP and level rules
-│   └── stats.js          dashboard numbers: XP, level, streak, progress
+│   ├── stats.js          dashboard numbers: XP, level, streak, progress
+│   ├── badges.js         the list of badges and their rules
+│   └── achievements.js   works out your history numbers and which badges you've earned
 ├── tests/
-│   └── api-check.js      automated checks for the API (npm run test:api)
+│   ├── api-check.js      automated checks for the API (npm run test:api)
+│   └── rules-check.js    checks for levels, streaks and badges (npm run test:rules)
 └── src/                  the frontend
     ├── main.jsx          starts React
     ├── App.jsx           which page shows for which address

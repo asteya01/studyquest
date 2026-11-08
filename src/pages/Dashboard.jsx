@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { api, assignments } from "../api.js";
+import Bar from "../components/Bar.jsx";
 import AssignmentRow from "../components/AssignmentRow.jsx";
 import Clock from "../components/Clock.jsx";
 import { Loading, ErrorMessage } from "../components/Status.jsx";
@@ -16,22 +17,6 @@ function useToday() {
     return () => clearInterval(timer);
   }, []);
   return today;
-}
-
-// A bar that fills from 0 to 100%. role="progressbar" lets screen readers announce it.
-function Bar({ percent, label, tone = "done" }) {
-  return (
-    <div
-      className={`bar bar-${tone}`}
-      role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={percent}
-    >
-      <div className="bar-fill" style={{ width: `${percent}%` }} />
-    </div>
-  );
 }
 
 function plural(n, word) {

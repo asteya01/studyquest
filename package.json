@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "npm run build && vite preview",
     "db:setup": "wrangler d1 migrations apply studyquest-db --local",
-    "test:api": "node tests/api-check.js"
+    "test:api": "node tests/api-check.js",
+    "test:rules": "node tests/rules-check.js"
   },
   "dependencies": {
     "react": "19.3.1",
