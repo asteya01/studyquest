@@ -229,6 +229,73 @@ async function main() {
   const missing = await call("GET", "/assignments/999999");
   check("an assignment that doesn't exist replies 404", missing.status === 404);
 
+  console.log("\nMore edge cases");
+  const nowhere = await call("GET", "/nothing-here");
+  check("an address that doesn't exist replies 404 with a message", nowhere.status === 404 && typeof nowhere.data?.error === "string");
+  const wrongMethod = await call("PATCH", "/subjects");
+  check("a method that isn't allowed replies 405", wrongMethod.status === 405);
+  for (const q of ["status=maybe", "sort=random", "subject=abc"]) {
+    const r = await call("GET", `/assignments?${q}`);
+    check(`the filter ${q} is refused with a message`, r.status === 400 && typeof r.data?.error === "string", `got ${r.status}`);
+  }
+  const descending = (await call("GET", "/assignments?sort=due_desc")).data?.map((a) => a.due_date) ?? [];
+  check("sorting 'due latest' puts the latest first", descending.every((d, i) => i === 0 || descending[i - 1] >= d));
+  const hardest = (await call("GET", "/assignments?sort=difficulty")).data?.map((a) => a.difficulty) ?? [];
+  check("sorting 'hardest first' puts hard work first", hardest.length > 0 && hardest.every((d, i) => i === 0 || hardest[i - 1] >= d));
+
+  const withNotes = await call("POST", "/assignments", {
+    title: "Notes search test", subject_id: subjectId, due_date: "2030-01-15", notes: "zebra-notes-xyz",
+  });
+  const inNotes = await call("GET", "/assignments?search=zebra-notes-xyz");
+  check("search also looks inside the notes", inNotes.data?.some((a) => a.id === withNotes.data?.id));
+  const combined = await call("GET", `/assignments?search=zebra-notes-xyz&subject=${subjectId}&status=todo`);
+  check("search, subject and status filters work together", combined.data?.length === 1);
+  const wrongSubject = await call("GET", `/assignments?search=zebra-notes-xyz&subject=${subjectId + 9999}`);
+  check("a filter that matches nothing returns an empty list, not an error", wrongSubject.status === 200 && wrongSubject.data?.length === 0);
+  await call("DELETE", `/assignments/${withNotes.data?.id}`);
+
+  const badUpdates = [
+    ["difficulty 9", { difficulty: 9 }],
+    ["a date that doesn't exist", { due_date: "2030-13-45" }],
+    ["an empty title", { title: "" }],
+    ["a subject that doesn't exist", { subject_id: 999999 }],
+  ];
+  for (const [what, changes] of badUpdates) {
+    const r = await call("PUT", `/assignments/${id}`, changes);
+    check(`updating with ${what} is refused`, r.status === 400 && typeof r.data?.error === "string", `got ${r.status}`);
+  }
+  const stillSame = await call("GET", `/assignments/${id}`);
+  check("refused updates don't change anything", stillSame.data?.title === "Updated test assignment" && stillSame.data?.difficulty === 2);
+  check("updating an assignment that doesn't exist replies 404", (await call("PUT", "/assignments/999999", { title: "x" })).status === 404);
+  const delMissing = await call("DELETE", "/assignments/999999");
+  check("deleting an assignment that doesn't exist replies 404", delMissing.status === 404, `got ${delMissing.status} ${JSON.stringify(delMissing.data)}`);
+  check("a JSON list instead of an object is refused", (await call("POST", "/assignments", [])).status === 400);
+  check("a JSON null instead of an object is refused", (await call("POST", "/assignments", null)).status === 400);
+
+  // Strange text must be stored and shown as plain text. It must never run as SQL or HTML.
+  const nasty = "'; DROP TABLE subjects; --";
+  const html = "<script>alert(1)</script>";
+  const n1 = await call("POST", "/assignments", { title: nasty, subject_id: subjectId, due_date: "2030-01-15" });
+  const n2 = await call("POST", "/assignments", { title: html, subject_id: subjectId, due_date: "2030-01-15" });
+  check("a title with quotes and SQL is saved as plain text", n1.status === 201 && n1.data?.title === nasty);
+  check("the subjects table survived that title", (await call("GET", "/subjects")).data?.length > 0);
+  check("searching for SQL-looking text is safe", (await call("GET", `/assignments?search=${encodeURIComponent(nasty)}`)).status === 200);
+  check("a title with <script> is saved exactly as typed", n2.data?.title === html);
+  await call("DELETE", `/assignments/${n1.data?.id}`);
+  await call("DELETE", `/assignments/${n2.data?.id}`);
+
+  // Finished work shows up in the "done" filter. Deleting it takes its XP away.
+  const doomed = await call("POST", "/assignments", { title: "Delete me after finishing", subject_id: subjectId, due_date: "2030-01-15", difficulty: 1 });
+  const xpBefore = (await call("GET", `/stats?today=${TODAY}`)).data?.total_xp;
+  await call("POST", `/assignments/${doomed.data?.id}/complete`, { today: TODAY });
+  const doneList = (await call("GET", "/assignments?status=done")).data ?? [];
+  const todoList = (await call("GET", "/assignments?status=todo")).data ?? [];
+  check("finished work appears under 'done' and not under 'to do'",
+    doneList.some((a) => a.id === doomed.data?.id) && !todoList.some((a) => a.id === doomed.data?.id));
+  check("finishing it added 10 XP", (await call("GET", `/stats?today=${TODAY}`)).data?.total_xp === xpBefore + 10);
+  await call("DELETE", `/assignments/${doomed.data?.id}`);
+  check("deleting finished work takes its XP back", (await call("GET", `/stats?today=${TODAY}`)).data?.total_xp === xpBefore);
+
   console.log("\nCleaning up");
   const deleted = await call("DELETE", `/assignments/${id}`);
   check("deleting works", deleted.data?.deleted === true);

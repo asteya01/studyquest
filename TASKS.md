@@ -125,3 +125,11 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [x] Touch targets 44px or bigger, 16px input text, no sideways scrolling on any page
 - [x] Skip-to-content link, a title for every page, favicon
 - [x] Check button "pop" (only right after checking something off), and reduced-motion support
+
+## 10. Testing
+- [x] 26 more API checks for edge cases: bad filters, wrong methods, refused updates, odd text, deleting finished work (97 total)
+- [x] `npm run test:dates`: 26 checks for today's date, due-date labels, daylight saving, month and year ends
+- [x] `npm test` runs the checks that don't need the app (53)
+- [x] TEST_REPORT.md: summary, what each suite checks, bugs found and fixed, what isn't tested
+- [ ] Do the manual checklist in TEST_REPORT.md on my Mac and phone, and fill in the Result column
+- [ ] Re-run all the tests on my Mac and write the date at the top of TEST_REPORT.md

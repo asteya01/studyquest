@@ -20,11 +20,14 @@ With `npm run dev` running, open a second Terminal tab and run:
 npm run test:api
 ```
 
-The game rules (levels, streaks, badges) can be tested without the app running:
+The game rules and date helpers can be tested without the app running:
 
 ```bash
-npm run test:rules
+npm test
 ```
+
+`npm test` runs `npm run test:rules` and `npm run test:dates`. Everything that was tested, and
+what was found, is in [TEST_REPORT.md](TEST_REPORT.md).
 
 ## Start the database over
 

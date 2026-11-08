@@ -9,7 +9,9 @@
     "preview": "npm run build && vite preview",
     "db:setup": "wrangler d1 migrations apply studyquest-db --local",
     "test:api": "node tests/api-check.js",
-    "test:rules": "node tests/rules-check.js"
+    "test:rules": "node tests/rules-check.js",
+    "test:dates": "node tests/dates-check.js",
+    "test": "npm run test:rules && npm run test:dates"
   },
   "dependencies": {
     "react": "19.3.1",

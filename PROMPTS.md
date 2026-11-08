@@ -323,3 +323,53 @@ Don't change the design. That's step 9.
 - Then list every file you changed or added, with one line on why.
 - Finish with the exact commands to run and test it myself, and what I should try
   by hand.
+
+## Prompt 9: Final design, phones and dark mode
+
+**ROLE:** You are a senior front-end engineer and designer pair-programming with an 8th-grade
+student. I'm the engineer in charge. You're my assistant. Explain what you do in
+simple language and define any technical terms.
+
+**CONTEXT:** StudyQuest is a homework planner that works like a game (React + Vite, Cloudflare
+Worker, D1). Steps 1-8 are done and every feature works, but the styling is a basic
+starting point: colors are typed in many places, the menu wraps awkwardly on a phone,
+and there's no dark mode. My users are students in grades 6-9 who mostly use it on a
+phone or a school laptop. Read AGENTS.md, ARCHITECTURE.md and TASKS.md first and follow them.
+
+**TASK:**
+Build step 9 only, "Design and phones." Don't change what the app does.
+1. Move every color into named CSS variables, with a light set and a dark set.
+2. Add a dark mode toggle in the top bar. Remember my choice, follow my computer's
+   setting if I haven't chosen, and don't flash the wrong theme while loading.
+3. Give it its own look instead of a generic template: keep the readable Lexend font,
+   and make the Level card the one bold, game-like element (dark with a gold XP bar).
+4. Make every page work on a phone (375px wide): turn the menu into a bottom tab bar
+   with icons, keep the layout from scrolling sideways, and keep the add button on one line.
+5. Add a skip-to-content link, a title for each page, and a favicon.
+6. Update ARCHITECTURE.md and TASKS.md.
+
+**CONSTRAINTS:**
+- Text must have a contrast ratio of at least 4.5:1 in both themes (3:1 for icons).
+  Check the numbers instead of guessing.
+- Buttons, inputs and tabs must be at least 44px tall on a phone. Input text must be
+  16px so iPhones don't zoom in.
+- Never use color alone to show meaning. Keep text or icons with it.
+- Keep keyboard focus visible. Respect "reduce motion". Only animate in response to
+  something I did (like checking a box), not on page load.
+- If saving the theme isn't allowed by the browser, the toggle must still work.
+- Don't add libraries. Don't change the backend or database.
+- Don't make it look like every other app: avoid a stock template look.
+
+**ACCEPTANCE CRITERIA:**
+- Every page looks right in light and dark, on a computer and a 375px phone, with no
+  sideways scrolling.
+- The toggle switches the theme, and my choice is still there after a refresh.
+- Tab is the first key press: "Skip to content" appears and works.
+- Each page has its own title in the browser tab.
+- npm run test:api, npm run test:rules and npm run build all pass.
+
+**OUTPUT:**
+- Start with your plan in a few sentences, before writing code.
+- Then list every file you changed or added, with one line on why.
+- Finish with the exact commands to run and test it myself, and what I should try
+  by hand (including on my phone).

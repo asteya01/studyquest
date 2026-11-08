@@ -153,6 +153,7 @@ studyquest/
 ├── AGENTS.md             rules my AI coding agent follows
 ├── ARCHITECTURE.md       this file
 ├── TASKS.md              the build checklist
+├── TEST_REPORT.md        what was tested, what was found, and the manual checklist
 ├── package.json          the project's tools and commands
 ├── vite.config.js        settings for Vite
 ├── wrangler.jsonc        settings for Cloudflare (Worker name, database)
@@ -170,7 +171,8 @@ studyquest/
 │   └── achievements.js   works out your history numbers and which badges you've earned
 ├── tests/
 │   ├── api-check.js      automated checks for the API (npm run test:api)
-│   └── rules-check.js    checks for levels, streaks and badges (npm run test:rules)
+│   ├── rules-check.js    checks for levels, streaks and badges (npm run test:rules)
+│   └── dates-check.js    checks for the date helpers (npm run test:dates)
 └── src/                  the frontend
     ├── main.jsx          starts React
     ├── App.jsx           which page shows for which address
