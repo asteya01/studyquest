@@ -10,6 +10,7 @@ import {
   listAssignments, getAssignment, createAssignment, updateAssignment, deleteAssignment,
 } from "./assignments.js";
 import { completeAssignment, undoCompletion } from "./completions.js";
+import { getStats } from "./stats.js";
 
 // GET /api/health: is the backend running, and can it reach the database?
 async function health(env) {
@@ -21,6 +22,7 @@ async function health(env) {
 const routes = [
   ["GET", "/api/health", health],
   ["GET", "/api/subjects", listSubjects],
+  ["GET", "/api/stats", getStats],
   ["GET", "/api/assignments", listAssignments],
   ["POST", "/api/assignments", createAssignment],
   ["GET", "/api/assignments/:id", getAssignment],

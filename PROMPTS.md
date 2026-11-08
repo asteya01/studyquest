@@ -111,3 +111,54 @@ Clicking an assignment or "Add assignment" goes to a placeholder page.
 - After saving or deleting, I see a short message saying it worked.
 
 **OUTPUT:** The working form, an explanation of how adding and editing share one form, and how to test it.
+
+## Prompt 5: Completing work and earning XP
+
+**ROLE:** You are a senior full-stack engineer pair-programming with an 8th-grade student.
+I'm the engineer in charge. You're my assistant. Explain what you do in simple
+language and define any technical terms.
+
+**CONTEXT:** StudyQuest is a homework planner that works like a game. It uses React and Vite for
+the frontend, one Cloudflare Worker for the backend, and Cloudflare D1 for the
+database. Steps 1-4 are finished: the subjects, assignments and completions tables
+exist (completions.assignment_id is UNIQUE); there are endpoints to list, add, edit
+and delete assignments; and there's an Assignments page with search, filters and a
+form. Nothing can be checked off yet, so there is no XP. Read AGENTS.md,
+ARCHITECTURE.md and TASKS.md first and follow them.
+
+**TASK:** Build step 5 only, "Completing work."
+1. Backend: POST /api/assignments/:id/complete records a completion and awards XP by
+   difficulty (easy 10, medium 20, hard 30). DELETE /api/assignments/:id/complete
+   removes the completion, which takes the XP back.
+2. Both endpoints reply with the updated assignment, the XP gained or lost, total XP,
+   level, and whether the student just leveled up. Level = floor(XP / 100) + 1.
+3. Frontend: a round check button on every assignment row. Clicking it checks the
+   assignment off, or un-checks it if it's already done. Show a message such as
+   "+20 XP. You have 40 XP." and a different one when the student levels up.
+4. Add automated checks for the new endpoints to tests/api-check.js.
+5. Check off the finished items in TASKS.md.
+Don't build the dashboard, streak or progress bar. Those are step 6.
+
+**CONSTRAINTS:**
+- The server decides the XP from the assignment's difficulty. The frontend never
+  sends an XP amount, so nobody can cheat.
+- Checking off the same assignment twice must not give double XP. It should be refused
+  with a clear message (409), even if two clicks arrive at the same moment.
+- Don't store a running XP total. Add it up from the completions table each time so it
+  can never get out of sync.
+- Don't change the database tables or edit old migrations.
+- Use ? placeholders in all SQL. All requests from the frontend go through src/api.js.
+- Wait for the server's answer before changing the row on screen. Don't guess the XP.
+- The button must work with a keyboard, have a clear accessible label, and show a
+  visible focus outline.
+- It must fit on a phone screen (375px wide).
+- Keep the code simple enough that I can explain every part of it.
+
+**ACCEPTANCE CRITERIA:**
+- Clicking the circle on a to-do assignment shows it as done (green circle, crossed-out
+  title) and shows "+XP" with the right amount for its difficulty.
+- Clicking it again un-checks it and shows the XP taken away.
+- Total XP and level are right after checking and un-checking.
+- Checking off a done assignment, un-checking one that isn't done, and using an ID that
+  doesn't exist all give a clear error message instead of crashing.
+- Refreshing the page keeps the checked state (it's saved in

@@ -89,3 +89,12 @@ Each step starts with a structured prompt (saved in PROMPTS.md), then running an
 - [x] Checking off twice is refused, so XP can't be double counted
 - [x] Round check button on every assignment, with "+20 XP" message and level-up message
 - [x] Automated checks for completing and undoing (`npm run test:api`)
+
+## 6. Quest stats and dashboard
+- [x] Migration 0003: each completion saves the student's local day (`completed_on`)
+- [x] `GET /api/stats?today=` with total XP, level, streak and progress
+- [x] Streak rule: days in a row, still alive if today isn't finished yet
+- [x] Progress bar: work due today, tomorrow or overdue
+- [x] Dashboard: level bar, XP, streak, progress bar, "Up next" list you can check off
+- [x] Live clock with greeting; the dashboard moves to the new day after midnight
+- [x] 15 more automated checks (45 total)

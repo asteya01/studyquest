@@ -23,6 +23,7 @@ async function request(method, path, body) {
 export const api = {
   health: () => request("GET", "/health"),
   subjects: () => request("GET", "/subjects"),
+  stats: (today) => request("GET", `/stats?today=${today}`),
 };
 
 // Assignments. filters is an object like { search: "math", subject: 1, status: "todo", sort: "due" }.
@@ -37,6 +38,6 @@ export const assignments = {
   create: (assignment) => request("POST", "/assignments", assignment),
   update: (id, changes) => request("PUT", `/assignments/${id}`, changes),
   remove: (id) => request("DELETE", `/assignments/${id}`),
-  complete: (id) => request("POST", `/assignments/${id}/complete`),
+  complete: (id, today) => request("POST", `/assignments/${id}/complete`, { today }),
   undo: (id) => request("DELETE", `/assignments/${id}/complete`),
 };

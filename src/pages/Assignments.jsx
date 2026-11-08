@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { api, assignments } from "../api.js";
+import { todayISO } from "../dates.js";
 import AssignmentRow from "../components/AssignmentRow.jsx";
 import { Loading, ErrorMessage } from "../components/Status.jsx";
 
@@ -64,7 +65,7 @@ export default function Assignments() {
   async function toggle(a) {
     setBusyId(a.id);
     try {
-      const result = a.completed ? await assignments.undo(a.id) : await assignments.complete(a.id);
+      const result = a.completed ? await assignments.undo(a.id) : await assignments.complete(a.id, todayISO());
       // Swap the new version of this one assignment into the list. The row stays where it is
       // until the next reload, so it doesn't jump away under your finger.
       setList((rows) => rows.map((row) => (row.id === a.id ? result.assignment : row)));

@@ -38,7 +38,8 @@ Three related tables. "Related" means rows point at rows in other tables using a
  ┌──────────────┐         ┌───────────────────────┐         ┌────────────────────────┐
  │ id           │◀────┐   │ id                    │◀────┐   │ id                     │
  │ name         │     └───│ subject_id            │     └───│ assignment_id (unique) │
- │ color        │         │ title                 │         │ completed_at           │
+ │ color        │         │ title                 │         │ completed_at  (UTC)    │
+ │ completed_on  (local)  │
  │ created_at   │         │ notes                 │         │ xp_earned              │
  └──────────────┘         │ due_date  (YYYY-MM-DD)│         └────────────────────────┘
                           │ difficulty (1, 2, 3)  │
@@ -60,7 +61,7 @@ the quest features are calculated from, so they never get out of sync:
 | --- | --- |
 | **XP** | Add up `xp_earned` from every completion. Easy = 10, medium = 20, hard = 30 XP. |
 | **Level** | Every 100 XP is one level: `level = floor(XP / 100) + 1`. |
-| **Streak** | Count the days in a row, up to today, that have at least one completion. |
+| **Streak** | Count the days in a row, up to today, that have at least one completion. Today not finished yet doesn't break it. |
 | **Progress bar** | Of the assignments due today or tomorrow (or overdue), what fraction are done. |
 | **Badges** | Rules checked against completions, like "5 assignments finished" or "a 3-day streak". |
 
@@ -68,7 +69,12 @@ the quest features are calculated from, so they never get out of sync:
 
 Cloudflare's servers run on UTC time, which is 8 hours ahead of California. So "today" always
 comes from the **browser**: the frontend sends its local date (like `?today=2026-11-04`) to the
-endpoints that need it.
+endpoints that need it. The server only accepts a date within one day of its own UTC date, so a
+wrong clock or a made-up date is refused.
+
+Each completion saves two times: `completed_at` (exact moment, UTC) and `completed_on` (the
+student's own calendar day, from the browser). The streak counts `completed_on` days, so a
+9 PM check-off in California counts for that evening instead of tomorrow (migration 0003).
 
 ## API design
 
@@ -83,9 +89,9 @@ endpoints that need it.
 | Add an assignment | `POST /api/assignments` | title, subject_id, due_date, difficulty, notes | the new assignment |
 | Update an assignment | `PUT /api/assignments/:id` | the changed fields | the updated assignment |
 | Delete an assignment | `DELETE /api/assignments/:id` | | `{ deleted: true }` |
-| Check off an assignment | `POST /api/assignments/:id/complete` | | XP earned and new stats |
+| Check off an assignment | `POST /api/assignments/:id/complete` | today | XP earned, total XP, level |
 | Un-check an assignment | `DELETE /api/assignments/:id/complete` | | `{ undone: true }` |
-| Quest stats | `GET /api/stats?today=YYYY-MM-DD` | today's date | XP, level, streak, progress, badges |
+| Quest stats | `GET /api/stats?today=YYYY-MM-DD` | today's date | XP, level, streak, progress (badges come in step 8) |
 
 **GET** reads, **POST** creates, **PUT** updates and **DELETE** removes.
 
@@ -137,7 +143,10 @@ studyquest/
 │   ├── index.js          the router: sends each /api/ request to the right endpoint
 │   ├── helpers.js        shared tools (replies, errors, checking IDs and dates)
 │   ├── subjects.js       subject endpoints
-│   └── assignments.js    assignment endpoints and their validation
+│   ├── assignments.js    assignment endpoints and their validation
+│   ├── completions.js    check off and un-check
+│   ├── xp.js             the XP and level rules
+│   └── stats.js          dashboard numbers: XP, level, streak, progress
 ├── tests/
 │   └── api-check.js      automated checks for the API (npm run test:api)
 └── src/                  the frontend

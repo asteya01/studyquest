@@ -8,6 +8,15 @@
 
 const BASE = process.env.API_URL ?? "http://localhost:5173/api";
 
+// Today's date in this computer's time zone, like the browser would send it.
+function localToday(offsetDays = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+const TODAY = localToday();
+
 let passed = 0;
 let failed = 0;
 
@@ -79,20 +88,57 @@ async function main() {
   check("searching for % doesn't match everything", wildcard.data?.length === 0);
 
   console.log("\nChecking off work and earning XP");
-  const statsBefore = await call("POST", `/assignments/${id}/complete`);
+  const noDate = await call("POST", `/assignments/${id}/complete`, {});
+  check("checking off without today's date is refused", noDate.status === 400 && typeof noDate.data?.error === "string");
+  const fakeDate = await call("POST", `/assignments/${id}/complete`, { today: "2020-01-01" });
+  check("a made-up date is refused", fakeDate.status === 400);
+  const statsBefore = await call("POST", `/assignments/${id}/complete`, { today: TODAY });
   check("checking off a medium assignment replies 200", statsBefore.status === 200, JSON.stringify(statsBefore.data));
   check("a medium assignment earns 20 XP", statsBefore.data?.xp_earned === 20);
   check("the assignment now shows as completed", statsBefore.data?.assignment?.completed === true);
   const xpAfter = statsBefore.data?.total_xp;
   check("level follows the 100-XP rule", statsBefore.data?.level === Math.floor(xpAfter / 100) + 1);
-  const twice = await call("POST", `/assignments/${id}/complete`);
+  const twice = await call("POST", `/assignments/${id}/complete`, { today: TODAY });
   check("checking off twice is refused (no double XP)", twice.status === 409 && typeof twice.data?.error === "string");
   const undone = await call("DELETE", `/assignments/${id}/complete`);
   check("un-checking takes the XP back", undone.data?.undone === true && undone.data?.total_xp === xpAfter - 20);
   const undoneTwice = await call("DELETE", `/assignments/${id}/complete`);
   check("un-checking something not done is refused", undoneTwice.status === 409);
-  const noSuch = await call("POST", "/assignments/999999/complete");
+  const noSuch = await call("POST", "/assignments/999999/complete", { today: TODAY });
   check("checking off an assignment that doesn't exist replies 404", noSuch.status === 404);
+
+  console.log("\nQuest stats: XP, level, streak and the progress bar");
+  const noToday = await call("GET", "/stats");
+  check("stats need today's date", noToday.status === 400 && typeof noToday.data?.error === "string");
+  const wrongDay = await call("GET", "/stats?today=2020-01-01");
+  check("stats refuse a date that isn't today", wrongDay.status === 400);
+
+  const s0 = (await call("GET", `/stats?today=${TODAY}`)).data;
+  check("stats include XP, level, streak and progress",
+    ["total_xp", "level", "streak", "progress"].every((k) => s0?.[k] !== undefined), JSON.stringify(s0));
+  check("level follows the 100-XP rule", s0?.level === Math.floor(s0.total_xp / 100) + 1);
+  check("progress percent is between 0 and 100", s0?.progress.percent >= 0 && s0?.progress.percent <= 100);
+
+  const dueToday = await call("POST", "/assignments", {
+    title: "Stats test (due today)", subject_id: subjectId, due_date: TODAY, difficulty: 3,
+  });
+  const todayId = dueToday.data?.id;
+  const s1 = (await call("GET", `/stats?today=${TODAY}`)).data;
+  check("work due today adds to the progress bar's total", s1?.progress.total === s0.progress.total + 1);
+
+  await call("POST", `/assignments/${todayId}/complete`, { today: TODAY });
+  const s2 = (await call("GET", `/stats?today=${TODAY}`)).data;
+  check("finishing it adds a done to the progress bar", s2?.progress.done === s1.progress.done + 1);
+  check("finishing a hard assignment adds 30 XP", s2?.total_xp === s0.total_xp + 30);
+  check("finishing something today says so", s2?.done_today === true);
+  check("the streak is at least 1 day", s2?.streak >= 1);
+
+  await call("DELETE", `/assignments/${todayId}/complete`);
+  const s3 = (await call("GET", `/stats?today=${TODAY}`)).data;
+  check("un-checking puts XP back to where it was", s3?.total_xp === s0.total_xp);
+  check("un-checking puts the progress bar back", s3?.progress.done === s0.progress.done);
+  check("the streak is back to what it was", s3?.streak === s0.streak);
+  await call("DELETE", `/assignments/${todayId}`);
 
   console.log("\nBad input gets a clear error");
   const bad = [
